@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: goecom-postgres
+    environment:
+      POSTGRES_USER: ${GOOSE_DBUSER:-postgres}
+      POSTGRES_PASSWORD: ${GOOSE_DBPASSWORD:-}
+      POSTGRES_DB: ${GOOSE_DB:-goecom}
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
