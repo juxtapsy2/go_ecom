@@ -7,13 +7,15 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/jackc/pgx/v5"
+	repo "github.com/juxtapsy2/go_ecom/internal/adapters/postgresql/sqlc"
+	"github.com/juxtapsy2/go_ecom/internal/orders"
 	"github.com/juxtapsy2/go_ecom/internal/products"
 )
 
 type application struct {
 	config config
-	// logger
-	// db driver
+	db     *pgx.Conn
 }
 
 // mount
@@ -37,9 +39,14 @@ func (app *application) mount() http.Handler {
 		w.Write([]byte("all good"))
 	})
 
-	productService := products.NewService()
+	productService := products.NewService(repo.New(app.db))
 	productHandler := products.NewHandler(productService)
 	router.Get("/products", productHandler.ListProducts)
+
+	orderService := orders.NewService(repo.New(app.db), app.db)
+	ordersHandler := orders.NewHandler(orderService)
+	router.Post("/orders", ordersHandler.PlaceOrder)
+
 	return router
 }
 

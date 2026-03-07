@@ -14,8 +14,8 @@ type svc struct {
 	repo repo.Querier
 }
 
-func NewService() Service {
-	return &svc{repo: repo}
+func NewService(r repo.Querier) Service {
+	return &svc{repo: r}
 }
 
 func (s *svc) ListProducts(ctx context.Context) ([]repo.Product, error) {
